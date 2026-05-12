@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- ===== SEO & GEO 최적화 메타태그 ===== -->
+<title>H2I · HTML 카드뉴스를 이미지로 변환 | 권티처 무료 도구</title>
+<meta name="description" content="HTML 카드뉴스를 1080×1350 인스타그램 이미지로 자동 변환하는 무료 웹 도구. 클로드·챗GPT·제미나이로 만든 HTML을 업로드하면 카드별 PNG로 일괄 추출. 권티처가 강의 수강생을 위해 제작했습니다.">
+<meta name="keywords" content="HTML 이미지 변환, 카드뉴스 만들기, 카드뉴스 PNG, HTML to image, 클로드 카드뉴스, ChatGPT 카드뉴스, 인스타그램 카드뉴스 무료, 권티처, AI강사 권티처, 휴먼AI연구소">
+<meta name="author" content="권혁용 강사 (권티처)">
+<meta name="robots" content="index, follow, max-image-preview:large">
+
+<!-- ===== Open Graph (카카오톡·페이스북 공유용) ===== -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="H2I · HTML 카드뉴스를 이미지로 변환 | 권티처">
+<meta property="og:description" content="HTML 카드뉴스를 클릭 한 번에 1080×1350 PNG로. 권티처가 만든 무료 도구.">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:site_name" content="H2I · 권티처">
+
+<!-- ===== Twitter Card ===== -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="H2I · HTML 카드뉴스를 이미지로 변환">
+<meta name="twitter:description" content="HTML 업로드만 하면 카드별 PNG로 자동 변환. 권티처 무료 도구.">
+
+<!-- ===== GEO (Generative Engine Optimization) 구조화 데이터 ===== -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "H2I · HTML to Image Converter",
+  "alternateName": "권티처 카드뉴스 변환기",
+  "description": "HTML 카드뉴스를 인스타그램 규격 이미지로 자동 변환하는 무료 웹 도구",
+  "url": "https://h2i.vercel.app",
+  "applicationCategory": "DesignApplication",
+  "operatingSystem": "Web Browser",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "KRW"
+  },
+  "author": {
+    "@type": "Person",
+    "name": "권혁용",
+    "alternateName": "권티처",
+    "jobTitle": "AI 강사",
+    "affiliation": {
+      "@type": "Organization",
+      "name": "휴먼AI연구소"
+    }
+  },
+  "inLanguage": "ko-KR",
+  "featureList": [
+    "HTML 파일 드래그앤드롭 업로드",
+    "카드 자동 감지 및 분리",
+    "사이즈 커스텀 입력 (1080x1350 기본)",
+    "PNG·JPG 출력 형식 선택",
+    "개별 다운로드 및 ZIP 일괄 다운로드",
+    "브라우저 내 처리로 보안 보장"
+  ]
+}
+</script>
+
+<!-- ===== 폰트 및 라이브러리 ===== -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+<!-- ===== 파비콘 (인라인 SVG) ===== -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23A8FF60'/%3E%3Ctext x='50' y='68' font-family='Arial' font-size='60' font-weight='900' text-anchor='middle' fill='%23000'%3EH%3C/text%3E%3C/svg%3E">
+
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --bg: #000000;
+    --bg-card: #0a1a0f;
+    --border: #1e3a24;
+    --mint: #A8FF60;
+    --lime: #C5FF7A;
+    --text: #FFFFFF;
+    --text-sub: #B8C5BE;
+    --text-deep: #6B7A72;
+    --danger: #ff6b6b;
+  }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Pretendard Variable', Pretendard, 'Malgun Gothic', sans-serif;
+    min-height: 100vh;
+    letter-spacing: -0.02em;
+  }
+  
+  /* 헤더 */
+  header {
+    padding: 24px 40px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0,0,0,0.95);
+    backdrop-filter: blur(10px);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .logo-mark {
+    width: 36px; height: 36px;
+    background: var(--mint);
+    color: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    border-radius: 8px;
+    font-size: 18px;
+  }
+  .logo-text h1 {
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--text);
+  }
+  .logo-text p {
+    font-size: 11px;
+    color: var(--text-sub);
+    margin-top: 2px;
+  }
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .brand-tag {
+    color: var(--mint);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 6px 14px;
+    border: 1.5px solid var(--mint);
+    border-radius: 20px;
+  }
+  
+  /* 히어로 섹션 */
+  .hero {
+    padding: 60px 40px 40px;
+    text-align: center;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .hero .badge {
+    display: inline-block;
+    padding: 6px 14px;
+    background: rgba(168, 255, 96, 0.1);
+    color: var(--mint);
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    border: 1px solid var(--mint);
+  }
+  .hero h2 {
+    font-size: 42px;
+    font-weight: 900;
+    line-height: 1.2;
+    margin-bottom: 20px;
+  }
+  .hero h2 .mint { color: var(--mint); }
+  .hero p {
+    font-size: 17px;
+    color: var(--text-sub);
+    line-height: 1.6;
+    max-width: 680px;
+    margin: 0 auto;
+  }
+  
+  /* 메인 */
+  main {
+    padding: 0 40px 40px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  
+  /* 드롭존 */
+  .dropzone {
+    border: 2px dashed var(--border);
+    border-radius: 16px;
+    padding: 60px 40px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: var(--bg-card);
+  }
+  .dropzone:hover, .dropzone.dragover {
+    border-color: var(--mint);
+    background: rgba(168, 255, 96, 0.05);
+  }
+  .dropzone-icon {
+    font-size: 56px;
+    margin-bottom: 16px;
+  }
+  .dropzone h2 {
+    font-size: 22px;
+    font-weight: 800;
+    margin-bottom: 8px;
+  }
+  .dropzone p {
+    color: var(--text-sub);
+    font-size: 14px;
+    margin-bottom: 24px;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    border: none;
+    transition: all 0.15s;
+    font-family: inherit;
+  }
+  .btn-primary {
+    background: var(--mint);
+    color: var(--bg);
+  }
+  .btn-primary:hover { background: var(--lime); transform: translateY(-1px); }
+  .btn-primary:disabled {
+    background: var(--text-deep);
+    cursor: not-allowed;
+    transform: none;
+  }
+  .btn-secondary {
+    background: transparent;
+    color: var(--mint);
+    border: 1.5px solid var(--mint);
+  }
+  .btn-secondary:hover { background: rgba(168, 255, 96, 0.1); }
+  .btn-ghost {
+    background: var(--bg-card);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .btn-ghost:hover { border-color: var(--mint); color: var(--mint); }
+  .btn-sm { padding: 8px 14px; font-size: 12px; }
+  
+  /* 설정 패널 */
+  .settings {
+    margin-top: 28px;
+    display: none;
+    grid-template-columns: 1fr 1fr 1fr auto;
+    gap: 16px;
+    padding: 24px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    align-items: end;
+  }
+  .settings.show { display: grid; }
+  .field label {
+    display: block;
+    font-size: 12px;
+    color: var(--text-sub);
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+  .field input, .field select {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+  }
+  .field input:focus, .field select:focus {
+    outline: none;
+    border-color: var(--mint);
+  }
+  
+  /* 프리셋 버튼 */
+  .presets {
+    margin-top: 16px;
+    display: none;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .presets.show { display: flex; }
+  .preset-btn {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text-sub);
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: inherit;
+  }
+  .preset-btn:hover {
+    border-color: var(--mint);
+    color: var(--mint);
+  }
+  .preset-btn.active {
+    background: var(--mint);
+    color: var(--bg);
+    border-color: var(--mint);
+  }
+  
+  /* 카드 목록 */
+  .cards-section {
+    margin-top: 32px;
+    display: none;
+  }
+  .cards-section.show { display: block; }
+  
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .section-header h2 {
+    font-size: 18px;
+    font-weight: 800;
+  }
+  .section-header .count {
+    color: var(--mint);
+  }
+  .actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 20px;
+  }
+  .card-item {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.2s;
+  }
+  .card-item:hover {
+    border-color: var(--mint);
+    transform: translateY(-2px);
+  }
+  .card-preview {
+    aspect-ratio: 4/5;
+    background: #000;
+    position: relative;
+    overflow: hidden;
+  }
+  .card-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .card-preview .loading {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-deep);
+    font-size: 12px;
+  }
+  .card-preview .status-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    background: rgba(168, 255, 96, 0.9);
+    color: var(--bg);
+  }
+  .card-preview .status-badge.pending {
+    background: rgba(107, 122, 114, 0.9);
+    color: var(--text);
+  }
+  .card-info {
+    padding: 12px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .card-info .name {
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .card-info .meta {
+    font-size: 11px;
+    color: var(--text-deep);
+    margin-top: 2px;
+  }
+  
+  /* 진행 상황 */
+  .progress {
+    margin-top: 20px;
+    padding: 16px 20px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    display: none;
+    align-items: center;
+    gap: 16px;
+  }
+  .progress.show { display: flex; }
+  .progress-bar {
+    flex: 1;
+    height: 6px;
+    background: var(--bg);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--mint);
+    transition: width 0.3s;
+    width: 0%;
+  }
+  .progress-text {
+    font-size: 13px;
+    color: var(--text-sub);
+    font-weight: 600;
+    min-width: 100px;
+  }
+  
+  /* 토스트 */
+  .toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--mint);
+    color: var(--bg);
+    padding: 14px 24px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 14px;
+    opacity: 0;
+    transition: all 0.3s;
+    z-index: 1000;
+  }
+  .toast.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+  .toast.error { background: var(--danger); color: var(--text); }
+  
+  /* 특장점 섹션 */
+  .features {
+    margin-top: 60px;
+    padding: 0 40px;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .features h3 {
+    text-align: center;
+    font-size: 28px;
+    font-weight: 900;
+    margin-bottom: 40px;
+  }
+  .features h3 .mint { color: var(--mint); }
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+  .feature-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px 24px;
+    transition: all 0.2s;
+  }
+  .feature-card:hover {
+    border-color: var(--mint);
+    transform: translateY(-2px);
+  }
+  .feature-icon {
+    font-size: 32px;
+    margin-bottom: 12px;
+  }
+  .feature-card h4 {
+    font-size: 16px;
+    font-weight: 800;
+    margin-bottom: 8px;
+    color: var(--mint);
+  }
+  .feature-card p {
+    font-size: 13px;
+    color: var(--text-sub);
+    line-height: 1.6;
+  }
+  
+  /* 도움말 */
+  .help-box {
+    margin-top: 28px;
+    padding: 20px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+  }
+  .help-box h3 {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--mint);
+    margin-bottom: 12px;
+  }
+  .help-box ul {
+    list-style: none;
+    font-size: 13px;
+    color: var(--text-sub);
+    line-height: 1.8;
+  }
+  .help-box ul li::before {
+    content: "▸ ";
+    color: var(--mint);
+    font-weight: 700;
+  }
+  .help-box code {
+    background: var(--bg);
+    color: var(--mint);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+  }
+  
+  /* 푸터 */
+  footer {
+    padding: 40px 40px 30px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    color: var(--text-deep);
+    font-size: 12px;
+    margin-top: 60px;
+  }
+  footer .mint { color: var(--mint); font-weight: 700; }
+  footer .links {
+    margin-top: 12px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  footer .links a {
+    color: var(--text-sub);
+    text-decoration: none;
+    font-weight: 600;
+  }
+  footer .links a:hover { color: var(--mint); }
+  
+  /* 반응형 */
+  @media (max-width: 768px) {
+    header { padding: 16px 20px; }
+    .logo-text h1 { font-size: 14px; }
+    .logo-text p { font-size: 10px; }
+    .brand-tag { font-size: 10px; padding: 4px 10px; }
+    .hero { padding: 40px 20px 20px; }
+    .hero h2 { font-size: 28px; }
+    .hero p { font-size: 14px; }
+    main { padding: 0 20px 20px; }
+    .features { padding: 0 20px; }
+    .features h3 { font-size: 22px; }
+    .settings { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-mark">H</div>
+    <div class="logo-text">
+      <h1>H2I · HTML to Image</h1>
+      <p>by 권티처</p>
+    </div>
+  </div>
+  <div class="header-right">
+    <a href="https://blog.naver.com/levelupai" target="_blank" class="brand-tag">📖 권티처 블로그</a>
+  </div>
+</header>
+
+<!-- 히어로 섹션 -->
+<section class="hero">
+  <div class="badge">✨ 권티처 강의 수강생을 위한 무료 도구</div>
+  <h2>
+    HTML 카드뉴스를<br>
+    <span class="mint">클릭 한 번에 이미지</span>로
+  </h2>
+  <p>
+    클로드·챗GPT·제미나이로 만든 HTML 카드뉴스를 업로드하면,<br>
+    카드별로 자동 분리해 인스타그램 규격 PNG로 일괄 추출합니다.
+  </p>
+</section>
+
+<main>
+  <!-- 1. 파일 업로드 -->
+  <div class="dropzone" id="dropzone">
+    <div class="dropzone-icon">📥</div>
+    <h2>HTML 파일을 끌어다 놓으세요</h2>
+    <p><code style="background:rgba(168,255,96,0.1); color:var(--mint); padding:2px 8px; border-radius:4px;">.card</code> 클래스를 가진 섹션을 자동으로 찾아 개별 이미지로 변환합니다</p>
+    <button class="btn btn-primary" id="selectBtn">
+      📁 파일 선택
+    </button>
+    <input type="file" id="fileInput" accept=".html" style="display:none">
+  </div>
+  
+  <!-- 2. 설정 -->
+  <div class="settings" id="settings">
+    <div class="field">
+      <label>이미지 너비 (px)</label>
+      <input type="number" id="widthInput" value="1080" min="100" max="4000">
+    </div>
+    <div class="field">
+      <label>이미지 높이 (px)</label>
+      <input type="number" id="heightInput" value="1350" min="100" max="4000">
+    </div>
+    <div class="field">
+      <label>출력 형식</label>
+      <select id="formatSelect">
+        <option value="png">PNG (고화질)</option>
+        <option value="jpg">JPG (용량 작음)</option>
+      </select>
+    </div>
+    <button class="btn btn-primary" id="renderBtn">
+      🎨 모두 변환하기
+    </button>
+  </div>
+  
+  <!-- 사이즈 프리셋 -->
+  <div class="presets" id="presets">
+    <button class="preset-btn active" data-w="1080" data-h="1350">📱 인스타 4:5 (1080×1350)</button>
+    <button class="preset-btn" data-w="1080" data-h="1080">⬜ 인스타 정사각 (1080×1080)</button>
+    <button class="preset-btn" data-w="1080" data-h="1920">📲 스토리·릴스 (1080×1920)</button>
+    <button class="preset-btn" data-w="1920" data-h="1080">💻 슬라이드 16:9 (1920×1080)</button>
+    <button class="preset-btn" data-w="1200" data-h="630">🌐 블로그 썸네일 (1200×630)</button>
+  </div>
+  
+  <!-- 3. 진행 상황 -->
+  <div class="progress" id="progress">
+    <div class="progress-text" id="progressText">준비 중...</div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+  </div>
+  
+  <!-- 4. 카드 목록 -->
+  <div class="cards-section" id="cardsSection">
+    <div class="section-header">
+      <h2>
+        감지된 카드 <span class="count" id="cardCount">0</span>장
+      </h2>
+      <div class="actions">
+        <button class="btn btn-ghost btn-sm" id="resetBtn">🔄 다시 시작</button>
+        <button class="btn btn-secondary btn-sm" id="downloadZipBtn" disabled>
+          📦 ZIP으로 일괄 다운로드
+        </button>
+      </div>
+    </div>
+    <div class="cards-grid" id="cardsGrid"></div>
+  </div>
+  
+  <!-- 5. 도움말 -->
+  <div class="help-box">
+    <h3>💡 사용 가이드</h3>
+    <ul>
+      <li>HTML 안에 <code>&lt;section class="card"&gt;</code> 또는 <code>class="card card-N"</code> 형식의 카드들이 있어야 합니다</li>
+      <li>각 카드의 원본 스타일과 폰트(Pretendard 등)는 그대로 보존됩니다</li>
+      <li>기본 사이즈는 인스타그램 4:5 비율 (1080 × 1350) — 위 프리셋으로 빠르게 변경 가능</li>
+      <li>각 카드 우측의 <code>⬇</code> 버튼으로 개별 다운로드, ZIP 버튼으로 일괄 다운로드</li>
+      <li>모든 처리는 브라우저 안에서만 일어납니다 — HTML이 서버로 전송되지 않습니다</li>
+    </ul>
+  </div>
+</main>
+
+<!-- 특장점 섹션 -->
+<section class="features">
+  <h3>왜 <span class="mint">H2I</span>인가요?</h3>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">⚡</div>
+      <h4>설치 없이 즉시 사용</h4>
+      <p>다운로드, 회원가입, 결제 모두 필요 없어요. 브라우저만 열면 바로 변환이 시작됩니다.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔒</div>
+      <h4>100% 로컬 처리</h4>
+      <p>HTML 파일이 외부 서버로 전송되지 않습니다. 강의 자료·내부 문서도 안심하고 변환하세요.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📐</div>
+      <h4>사이즈 완전 자유</h4>
+      <p>인스타 4:5, 정사각, 스토리, 슬라이드 16:9, 블로그 썸네일까지 원하는 규격으로 출력합니다.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🎨</div>
+      <h4>원본 디자인 보존</h4>
+      <p>Pretendard·맑은 고딕 등 한국어 폰트와 다크 민트 같은 모든 CSS 스타일을 그대로 유지합니다.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📦</div>
+      <h4>ZIP 일괄 다운로드</h4>
+      <p>10장이든 30장이든 한 번에 ZIP으로 받아 폴더 정리 없이 바로 인스타·블로그에 업로드하세요.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">💚</div>
+      <h4>권티처 무료 약속</h4>
+      <p>강의 수강생과 AI 콘텐츠 제작자를 위해 만든 도구입니다. 광고 없이 평생 무료입니다.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>© 2026 <span class="mint">권티처</span> · 휴먼AI연구소 · HTML to Image Converter v1.0</p>
+  <div class="links">
+    <a href="https://blog.naver.com/levelupai" target="_blank">📖 권티처 네이버 블로그</a>
+    <a href="#" id="aboutLink">ℹ️ 도구 소개</a>
+  </div>
+  <p style="margin-top: 16px; font-size: 11px;">
+    AI 콘텐츠 제작·GEO·강의 문의는 권티처 블로그를 참고해주세요
+  </p>
+</footer>
+
+<!-- 토스트 -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================
+// H2I · HTML to Image Converter v1.0
+// 권티처 · 휴먼AI연구소 · 2026
+// ============================================
+
+const state = {
+  htmlContent: null,
+  cards: [],
+  isRendering: false,
+};
+
+const $ = (id) => document.getElementById(id);
+
+// ============================================
+// 1. 파일 입력 처리
+// ============================================
+
+const dropzone = $('dropzone');
+const fileInput = $('fileInput');
+
+$('selectBtn').addEventListener('click', (e) => {
+  e.stopPropagation();
+  fileInput.click();
+});
+
+dropzone.addEventListener('click', () => fileInput.click());
+
+dropzone.addEventListener('dragover', (e) => {
+  e.preventDefault();
+  dropzone.classList.add('dragover');
+});
+
+dropzone.addEventListener('dragleave', () => {
+  dropzone.classList.remove('dragover');
+});
+
+dropzone.addEventListener('drop', (e) => {
+  e.preventDefault();
+  dropzone.classList.remove('dragover');
+  const file = e.dataTransfer.files[0];
+  if (file && file.name.endsWith('.html')) {
+    handleFile(file);
+  } else {
+    showToast('HTML 파일만 업로드 가능합니다', 'error');
+  }
+});
+
+fileInput.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (file) handleFile(file);
+});
+
+async function handleFile(file) {
+  try {
+    const text = await file.text();
+    state.htmlContent = text;
+    parseAndDetectCards(text);
+  } catch (err) {
+    showToast('파일 읽기 실패: ' + err.message, 'error');
+  }
+}
+
+// ============================================
+// 2. 카드 자동 감지
+// ============================================
+
+function parseAndDetectCards(htmlText) {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(htmlText, 'text/html');
+  
+  const cardElements = doc.querySelectorAll('.card, [class*="card-"]');
+  
+  const topLevelCards = [];
+  cardElements.forEach((el) => {
+    const isNested = topLevelCards.some(parent => parent.contains(el));
+    if (!isNested) {
+      if (el.classList.contains('card') || /card-\d+/.test(el.className)) {
+        topLevelCards.push(el);
+      }
+    }
+  });
+  
+  if (topLevelCards.length === 0) {
+    showToast('카드를 찾을 수 없습니다. .card 클래스가 있는지 확인하세요', 'error');
+    return;
+  }
+  
+  const headContent = doc.head.innerHTML;
+  
+  state.cards = topLevelCards.map((el, idx) => ({
+    index: idx + 1,
+    name: `card-${String(idx + 1).padStart(2, '0')}`,
+    html: el.outerHTML,
+    headHTML: headContent,
+    blob: null,
+    dataUrl: null,
+    status: 'pending',
+  }));
+  
+  renderCardList();
+  $('settings').classList.add('show');
+  $('presets').classList.add('show');
+  $('cardsSection').classList.add('show');
+  $('cardCount').textContent = state.cards.length;
+  
+  showToast(`✓ ${state.cards.length}장의 카드를 감지했습니다`);
+  
+  // 카드 섹션으로 스크롤
+  setTimeout(() => {
+    $('cardsSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 300);
+}
+
+// ============================================
+// 3. 카드 목록 UI 렌더링
+// ============================================
+
+function renderCardList() {
+  const grid = $('cardsGrid');
+  grid.innerHTML = '';
+  
+  state.cards.forEach((card) => {
+    const item = document.createElement('div');
+    item.className = 'card-item';
+    item.id = `card-item-${card.index}`;
+    item.innerHTML = `
+      <div class="card-preview" id="preview-${card.index}">
+        <div class="loading">대기 중...</div>
+        <div class="status-badge pending" id="badge-${card.index}">대기</div>
+      </div>
+      <div class="card-info">
+        <div>
+          <div class="name">${card.name}</div>
+          <div class="meta">페이지 ${card.index}</div>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="downloadCard(${card.index})" id="dl-${card.index}" disabled>
+          ⬇
+        </button>
+      </div>
+    `;
+    grid.appendChild(item);
+  });
+}
+
+// ============================================
+// 4. 프리셋 처리
+// ============================================
+
+document.querySelectorAll('.preset-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    $('widthInput').value = btn.dataset.w;
+    $('heightInput').value = btn.dataset.h;
+  });
+});
+
+// ============================================
+// 5. 메인 변환 로직
+// ============================================
+
+$('renderBtn').addEventListener('click', async () => {
+  if (state.isRendering) return;
+  if (state.cards.length === 0) {
+    showToast('먼저 HTML 파일을 업로드하세요', 'error');
+    return;
+  }
+  
+  state.isRendering = true;
+  $('renderBtn').disabled = true;
+  $('downloadZipBtn').disabled = true;
+  $('progress').classList.add('show');
+  
+  const width = parseInt($('widthInput').value) || 1080;
+  const height = parseInt($('heightInput').value) || 1350;
+  const format = $('formatSelect').value;
+  
+  for (let i = 0; i < state.cards.length; i++) {
+    const card = state.cards[i];
+    updateProgress(i, state.cards.length, `${card.name} 변환 중...`);
+    
+    try {
+      await renderCard(card, width, height, format);
+    } catch (err) {
+      console.error(`${card.name} 변환 실패:`, err);
+      card.status = 'failed';
+      updateCardStatus(card.index, 'failed');
+    }
+  }
+  
+  updateProgress(state.cards.length, state.cards.length, '✓ 모든 카드 변환 완료!');
+  state.isRendering = false;
+  $('renderBtn').disabled = false;
+  $('downloadZipBtn').disabled = false;
+  
+  showToast(`✓ ${state.cards.filter(c => c.blob).length}장 변환 완료`);
+});
+
+// ============================================
+// 6. 개별 카드 렌더링
+// ============================================
+
+async function renderCard(card, targetWidth, targetHeight, format) {
+  return new Promise((resolve, reject) => {
+    const iframe = document.createElement('iframe');
+    iframe.style.position = 'absolute';
+    iframe.style.left = '-99999px';
+    iframe.style.top = '0';
+    iframe.style.width = targetWidth + 'px';
+    iframe.style.height = targetHeight + 'px';
+    iframe.style.border = 'none';
+    
+    const cardHTML = `
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+${card.headHTML}
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: ${targetWidth}px;
+    height: ${targetHeight}px;
+    overflow: hidden;
+    background: transparent;
+  }
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .card {
+    width: ${targetWidth}px !important;
+    height: ${targetHeight}px !important;
+    aspect-ratio: unset !important;
+    transform: none !important;
+    padding: ${Math.round(targetWidth * 48 / 540)}px ${Math.round(targetWidth * 44 / 540)}px !important;
+    border-radius: 0 !important;
+  }
+</style>
+</head>
+<body>
+${card.html}
+</body>
+</html>
+    `;
+    
+    document.body.appendChild(iframe);
+    
+    iframe.onload = async () => {
+      try {
+        await new Promise(r => setTimeout(r, 800));
+        
+        if (iframe.contentDocument.fonts) {
+          await iframe.contentDocument.fonts.ready;
+        }
+        
+        const cardElement = iframe.contentDocument.querySelector('.card');
+        if (!cardElement) {
+          throw new Error('카드 요소를 찾을 수 없습니다');
+        }
+        
+        const canvas = await html2canvas(cardElement, {
+          width: targetWidth,
+          height: targetHeight,
+          windowWidth: targetWidth,
+          windowHeight: targetHeight,
+          scale: 2,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: null,
+          logging: false,
+        });
+        
+        const mimeType = format === 'jpg' ? 'image/jpeg' : 'image/png';
+        canvas.toBlob((blob) => {
+          card.blob = blob;
+          card.dataUrl = canvas.toDataURL(mimeType, format === 'jpg' ? 0.95 : 1.0);
+          card.status = 'done';
+          card.format = format;
+          updateCardPreview(card.index, card.dataUrl);
+          updateCardStatus(card.index, 'done');
+          document.body.removeChild(iframe);
+          resolve();
+        }, mimeType, format === 'jpg' ? 0.95 : 1.0);
+        
+      } catch (err) {
+        document.body.removeChild(iframe);
+        reject(err);
+      }
+    };
+    
+    iframe.srcdoc = cardHTML;
+  });
+}
+
+// ============================================
+// 7. UI 업데이트
+// ============================================
+
+function updateCardPreview(index, dataUrl) {
+  const preview = $(`preview-${index}`);
+  if (preview) {
+    preview.innerHTML = `
+      <img src="${dataUrl}" alt="card-${index}">
+      <div class="status-badge">완료</div>
+    `;
+  }
+  const dlBtn = $(`dl-${index}`);
+  if (dlBtn) dlBtn.disabled = false;
+}
+
+function updateCardStatus(index, status) {
+  const badge = $(`badge-${index}`);
+  if (badge) {
+    if (status === 'done') {
+      badge.textContent = '완료';
+      badge.classList.remove('pending');
+    } else if (status === 'failed') {
+      badge.textContent = '실패';
+      badge.style.background = 'rgba(255, 107, 107, 0.9)';
+    }
+  }
+}
+
+function updateProgress(current, total, message) {
+  const percent = Math.round((current / total) * 100);
+  $('progressFill').style.width = percent + '%';
+  $('progressText').textContent = `${current}/${total} · ${message}`;
+}
+
+// ============================================
+// 8. 다운로드 처리
+// ============================================
+
+window.downloadCard = function(index) {
+  const card = state.cards.find(c => c.index === index);
+  if (!card || !card.blob) return;
+  
+  const ext = card.format || 'png';
+  const filename = `${card.name}.${ext}`;
+  saveAs(card.blob, filename);
+  showToast(`✓ ${filename} 다운로드`);
+};
+
+$('downloadZipBtn').addEventListener('click', async () => {
+  const downloadable = state.cards.filter(c => c.blob);
+  if (downloadable.length === 0) {
+    showToast('다운로드할 이미지가 없습니다', 'error');
+    return;
+  }
+  
+  showToast('ZIP 파일 생성 중...');
+  
+  const zip = new JSZip();
+  const folderName = `cardnews_${getDateString()}`;
+  const folder = zip.folder(folderName);
+  
+  for (const card of downloadable) {
+    const ext = card.format || 'png';
+    folder.file(`${card.name}.${ext}`, card.blob);
+  }
+  
+  const zipBlob = await zip.generateAsync({ type: 'blob' });
+  saveAs(zipBlob, `${folderName}.zip`);
+  showToast(`✓ ${downloadable.length}장이 ZIP으로 다운로드되었습니다`);
+});
+
+$('resetBtn').addEventListener('click', () => {
+  if (confirm('처음부터 다시 시작할까요?')) {
+    location.reload();
+  }
+});
+
+$('aboutLink').addEventListener('click', (e) => {
+  e.preventDefault();
+  alert(`H2I · HTML to Image Converter
+  
+권티처(권혁용 강사)가 강의 수강생을 위해 제작한 무료 도구입니다.
+
+· 휴먼AI연구소
+· AI강사 권티처
+· 한국 GEO 분야 선구자
+
+문의 및 강의 정보는 권티처 네이버 블로그에서 확인하세요.`);
+});
+
+// ============================================
+// 9. 유틸
+// ============================================
+
+function showToast(message, type = 'success') {
+  const toast = $('toast');
+  toast.textContent = message;
+  toast.classList.toggle('error', type === 'error');
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2500);
+}
+
+function getDateString() {
+  const d = new Date();
+  const pad = (n) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}_${pad(d.getHours())}${pad(d.getMinutes())}`;
+}
+
+</script>
+</body>
+</html>
